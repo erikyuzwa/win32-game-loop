@@ -3,13 +3,14 @@
 #include <Windows.h>
 
 const WCHAR* className = L"WIN32GAME";
-const WCHAR* appTitle = L"My win32 game";
+const WCHAR* appTitle = L"My win32 game - with window centering";
 
 extern int game_startup();
 extern void game_update();
 extern void game_shutdown();
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void center_window(HWND hWnd);
 
 int WINAPI WinMain(
     HINSTANCE hInstance,
@@ -60,6 +61,8 @@ int WINAPI WinMain(
     UpdateWindow(hWnd);
     SetFocus(hWnd);
 
+    center_window(hWnd);
+
     // with the window created, run your game initialization
     if (game_startup() < 0) {
         // depending on which startup initialization failed
@@ -104,6 +107,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
 
     // what is the message
     switch (uMsg) {
+    case WM_KEYDOWN:
+        switch (wParam) {
+        case VK_ESCAPE:
+            PostMessage(hWnd, WM_CLOSE, 0, 0);
+            break;
+        default:
+            break;
+        }
+        break;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
@@ -118,3 +130,28 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+void center_window(HWND hWnd) {
+
+    DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+    int screen_width = GetSystemMetrics(SM_CXSCREEN);
+    int screen_height = GetSystemMetrics(SM_CYSCREEN);
+    RECT client_rect;
+    GetClientRect(hWnd, &client_rect);
+    AdjustWindowRectEx(&client_rect, style, FALSE, 0);
+
+    int client_width = client_rect.right - client_rect.left;
+    int client_height = client_rect.bottom - client_rect.top;
+
+    SetWindowPos(
+        hWnd,
+        NULL,
+        screen_width / 2 - client_width / 2,
+        screen_height / 2 - client_height / 2,
+        client_width,
+        client_height,
+        0);
+
+}
+
