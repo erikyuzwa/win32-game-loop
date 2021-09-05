@@ -1,4 +1,4 @@
-# win32-game-loop
+# Windows Game Loop
 
 This is my (multiple) versions of putting together a Windows loop for game programming
 using C and the win32 API.
