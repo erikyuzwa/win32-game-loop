@@ -2,14 +2,20 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-const WCHAR* className = L"WIN32GAME";
-const WCHAR* appTitle = L"My win32 game";
+const WCHAR* className = L"WIN32GAMELOOP";
+const WCHAR* appTitle = L"My win32 gameloop - ESC to exit, F1 for fullscreen/window";
+
+int width = 640;
+int height = 480;
+bool windowed = true;
 
 extern int game_startup();
 extern void game_update();
 extern void game_shutdown();
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void center_window(HWND hWnd);
+void toggle_window(HWND hWnd, bool windowed);
 
 int WINAPI WinMain(
     HINSTANCE hInstance,
@@ -41,6 +47,7 @@ int WINAPI WinMain(
         return -1;
     }
 
+    
     // create the actual visual window handle - 640x480
     if (!(hWnd = CreateWindowEx(NULL,
         className,
@@ -48,18 +55,21 @@ int WINAPI WinMain(
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        640,
-        480,
+        width,
+        height,
         NULL,
         NULL,
         hInstance,
         NULL)))
         return -2;
 
+    
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
     SetFocus(hWnd);
 
+    center_window(hWnd);
+    
     // with the window created, run your game initialization
     if (game_startup() < 0) {
         // depending on which startup initialization failed
@@ -104,17 +114,93 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
 
     // what is the message
     switch (uMsg) {
+    case WM_KEYDOWN:
+        switch (wParam) {
+        case VK_ESCAPE:
+            PostMessage(hWnd, WM_CLOSE, 0, 0);
+            break;
+        case VK_F1:
+            windowed = !windowed;
+            toggle_window(hWnd, windowed);
+            break;
+        default:
+            break;
+        }
+    break;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
         return 0;
-        break;
+    break;
     case WM_DESTROY:
+        toggle_window(hWnd, true);
         PostQuitMessage(0);
-        break;
+    break;
     default:
-        break;
+    break;
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+void toggle_window(HWND hWnd, bool windowed) {
+
+    int result = 0;
+    DEVMODE settings;
+    ZeroMemory(&settings, sizeof(settings));
+
+    if (!windowed) {
+        result = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &settings);
+        settings.dmPelsWidth = width;
+        settings.dmPelsHeight = height;
+        settings.dmBitsPerPel = 32;
+        settings.dmFields |= DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+        result = ChangeDisplaySettings(&settings, CDS_FULLSCREEN);
+
+        SetMenu(hWnd, NULL);
+        SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
+        SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+        SetWindowPos(
+            hWnd, 
+            HWND_TOPMOST,
+            0, 0, 0, 0,
+            SWP_NOSIZE | SWP_FRAMECHANGED
+        );
+    }
+    else {
+
+        ChangeDisplaySettings(NULL, 0);
+        SetWindowLongPtr(hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+        SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_CLIENTEDGE);
+
+        center_window(hWnd);  
+    }
+
+    ShowWindow(hWnd, SW_SHOW);
+    UpdateWindow(hWnd);
+}
+
+void center_window(HWND hWnd) {
+
+    DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+    int screen_width = GetSystemMetrics(SM_CXSCREEN);
+    int screen_height = GetSystemMetrics(SM_CYSCREEN);
+    RECT client_rect;
+    GetClientRect(hWnd, &client_rect);
+    AdjustWindowRectEx(&client_rect, style, FALSE, 0);
+
+    int client_width = client_rect.right - client_rect.left;
+    int client_height = client_rect.bottom - client_rect.top;
+
+    SetWindowPos(
+        hWnd,
+        NULL,
+        screen_width / 2 - client_width / 2,
+        screen_height / 2 - client_height / 2,
+        client_width,
+        client_height,
+        0);
+
+}
+
