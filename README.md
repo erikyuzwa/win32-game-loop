@@ -6,6 +6,17 @@ using C and the win32 API.
 There are multiple branches depending on the feature; I thought it'd be a lot easier
 to keep updated vs. tags which get annoying to manage with updates (IMHO).
 
+Note that the project files were built with VS2019, but the `./src` folder should be
+capable of just being dropped into your own favorite IDE
+
+## requirements
+
+- Visual Studio, CLion, or any compiler really
+- Some coffee
+- Willing to have fun
+
+## branch listing
+
 - **main** - the basic game loop with a 640x480 client area
 
 
