@@ -1,120 +1,65 @@
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include <SDL.h>
 
-const WCHAR* className = L"WIN32GAME";
-const WCHAR* appTitle = L"My win32 game";
+#pragma comment(lib, "sdl2.lib")
+#pragma comment(lib, "sdl2main.lib")
 
 extern int game_startup();
 extern void game_update();
 extern void game_shutdown();
 
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+SDL_Window* hWnd = nullptr;
 
-int WINAPI WinMain(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine,
-    int nCmdShow)
-{
+int main(int argc, char* argv[]) {
 
-    WNDCLASSEX winclass;
-    HWND       hWnd;
-    MSG        msg;
+	int result = 0;
+	result = SDL_Init(SDL_INIT_VIDEO);
 
-    // setup the class instance of our Win32 application
-    winclass.cbSize = sizeof(WNDCLASSEX);
-    winclass.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-    winclass.lpfnWndProc = WindowProc;
-    winclass.cbClsExtra = 0;
-    winclass.cbWndExtra = 0;
-    winclass.hInstance = hInstance;
-    winclass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-    winclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    winclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    winclass.lpszMenuName = NULL;
-    winclass.lpszClassName = className;
-    winclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	hWnd = SDL_CreateWindow("My win32 gameloop", 
+		SDL_WINDOWPOS_CENTERED, 
+		SDL_WINDOWPOS_CENTERED, 
+		640, 
+		480, 
+		SDL_WINDOW_SHOWN);
+	
+	SDL_SetWindowInputFocus(hWnd);
 
-    // attempt to register the win32 application class
-    if (!RegisterClassEx(&winclass)) {
-        return -1;
-    }
+	game_startup();
 
-    // create the actual visual window handle - 640x480
-    if (!(hWnd = CreateWindowEx(NULL,
-        className,
-        appTitle,
-        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        640,
-        480,
-        NULL,
-        NULL,
-        hInstance,
-        NULL)))
-        return -2;
+    bool quit = false;
+    SDL_Event e;
 
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
-    SetFocus(hWnd);
+    while (!quit)
+    {
 
-    // with the window created, run your game initialization
-    if (game_startup() < 0) {
-        // depending on which startup initialization failed
-        // goto our shutdown pathway to ensure resource cleanup
-        goto SHUTDOWN_AND_EXIT;
-    }
-
-    // enter the main event loop
-    while (TRUE) {
-        // test if there is a message in queue, if so get it
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-            //
-            if (msg.message == WM_QUIT)
-                break;
-
-            // translate any accelerator keys
-            TranslateMessage(&msg);
-
-            // send the message to the window proc
-            DispatchMessage(&msg);
+        // handle events on queue
+        while (SDL_PollEvent(&e) != 0)
+        {
+            // User requests quit
+            if (e.type == SDL_QUIT)
+            {
+                quit = true;
+            }
+            else if (e.type == SDL_KEYDOWN)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_ESCAPE:
+                    quit = true;
+                    break;
+                default:
+                    break;
+                }
+            }
         }
 
-        // run your game frame processing here
         game_update();
 
-    } // end while
-
-SHUTDOWN_AND_EXIT:
-    // shutdown and cleanup any resource
-    game_shutdown();
-
-    return (int)msg.wParam;
-}
-
-LRESULT CALLBACK WindowProc(HWND hWnd,
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam) {
-
-    PAINTSTRUCT        ps;
-    HDC                hdc;
-
-    // what is the message
-    switch (uMsg) {
-    case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
-        return 0;
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        break;
     }
 
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    game_shutdown();
+
+    SDL_Quit();
+
+    return 0;
 }
