@@ -47,7 +47,6 @@ int WINAPI WinMain(
         return -1;
     }
 
-    
     // create the actual visual window handle - 640x480
     if (!(hWnd = CreateWindowEx(NULL,
         className,
@@ -63,7 +62,6 @@ int WINAPI WinMain(
         NULL)))
         return -2;
 
-    
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
     SetFocus(hWnd);
@@ -143,6 +141,30 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+void center_window(HWND hWnd) {
+
+    DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+    int screen_width = GetSystemMetrics(SM_CXSCREEN);
+    int screen_height = GetSystemMetrics(SM_CYSCREEN);
+    RECT client_rect;
+    GetClientRect(hWnd, &client_rect);
+    AdjustWindowRectEx(&client_rect, style, FALSE, 0);
+
+    int client_width = client_rect.right - client_rect.left;
+    int client_height = client_rect.bottom - client_rect.top;
+
+    SetWindowPos(
+        hWnd,
+        NULL,
+        screen_width / 2 - client_width / 2,
+        screen_height / 2 - client_height / 2,
+        client_width,
+        client_height,
+        0);
+
+}
+
 void toggle_window(HWND hWnd, bool windowed) {
 
     int result = 0;
@@ -180,27 +202,4 @@ void toggle_window(HWND hWnd, bool windowed) {
     UpdateWindow(hWnd);
 }
 
-void center_window(HWND hWnd) {
-
-    DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-
-    int screen_width = GetSystemMetrics(SM_CXSCREEN);
-    int screen_height = GetSystemMetrics(SM_CYSCREEN);
-    RECT client_rect;
-    GetClientRect(hWnd, &client_rect);
-    AdjustWindowRectEx(&client_rect, style, FALSE, 0);
-
-    int client_width = client_rect.right - client_rect.left;
-    int client_height = client_rect.bottom - client_rect.top;
-
-    SetWindowPos(
-        hWnd,
-        NULL,
-        screen_width / 2 - client_width / 2,
-        screen_height / 2 - client_height / 2,
-        client_width,
-        client_height,
-        0);
-
-}
 
