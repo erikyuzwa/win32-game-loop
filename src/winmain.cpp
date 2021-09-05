@@ -81,6 +81,9 @@ int main(int argc, char* argv[]) {
 
     game_shutdown();
 
+    SDL_DestroyWindow(hWnd);
+    hWnd = nullptr;
+
     SDL_Quit();
 
     return 0;
