@@ -27,6 +27,9 @@ capable of just being dropped into your own favorite IDE
 | --- | --- |
 | **main-loop-with-SDL2** | the basic game loop using SDL2 |
 | **window-fullscreen-toggle-with-SDL2** | add support to the SDL2 game loop with windowed / fullscreen toggle |
+| --- | --- |
+| **main-loop-with-SFML** | the basic game loop using SFML |
+| **window-fullscreen-toggle-with-SFML** | add support to the SFML game loop with windowed / fullscreen toggle |
 
 
 # LICENSE
