@@ -24,6 +24,9 @@ capable of just being dropped into your own favorite IDE
 | **main** | the basic game loop with a 640x480 client area |
 | **center-window** | the basic game loop with code to center the game window |
 | **window-fullscreen-toggle** | add support for a windowed / fullscreen toggle (w/ F1) |
+| --- | --- |
+| **main-loop-with-SDL2** | the basic game loop using SDL2 |
+| **window-fullscreen-toggle-with-SDL2** | add support to the SDL2 game loop with windowed / fullscreen toggle |
 
 
 # LICENSE
