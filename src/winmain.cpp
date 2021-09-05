@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 const WCHAR* className = L"WIN32GAME";
-const WCHAR* appTitle = L"My win32 game - with window centering";
+const WCHAR* appTitle = L"My win32 gameloop - ESC to exit";
 
 extern int game_startup();
 extern void game_update();
