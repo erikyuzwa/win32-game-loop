@@ -9,6 +9,8 @@ to keep updated vs. tags which get annoying to manage with updates (IMHO).
 Note that the project files were built with VS2019, but the `./src` folder should be
 capable of just being dropped into your own favorite IDE
 
+![](./screenshot.png)
+
 ## requirements
 
 - Visual Studio, CLion, or any compiler really
