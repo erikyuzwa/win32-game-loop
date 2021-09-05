@@ -53,11 +53,23 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        int w;
+        int h;
+        SDL_GetWindowSize(hWnd, &w, &h);
+
+        SDL_Surface* surface = SDL_GetWindowSurface(hWnd);
+        Uint32 skyblue = SDL_MapRGB(surface->format, 100, 149, 237);
+        SDL_FillRect(surface, NULL, skyblue);
+        SDL_UpdateWindowSurface(hWnd);
+
         game_update();
 
     }
 
     game_shutdown();
+
+    SDL_DestroyWindow(hWnd);
+    hWnd = nullptr;
 
     SDL_Quit();
 
