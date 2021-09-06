@@ -17,7 +17,11 @@ capable of just being dropped into your own favorite IDE
 - Some coffee
 - Willing to have fun
 
-## branch listing
+## Branch Listing
+
+- `git clone git@github.com:erikyuzwa/win32-game-loop.git <your-project-name>`
+- `cd <your-project-name>`
+- `git checkout -t origin/<branch-name>`
 
 | branch name | description |
 | --- | --- |
@@ -30,6 +34,16 @@ capable of just being dropped into your own favorite IDE
 | --- | --- |
 | **main-loop-with-SFML** | the basic game loop using SFML |
 | **window-fullscreen-toggle-with-SFML** | add support to the SFML game loop with windowed / fullscreen toggle |
+
+## Documentation References
+
+| library | link |
+| --- | --- |
+| **SFML** | https://www.sfml-dev.org/documentation/2.5.1/ |
+| **SDL2** | https://wiki.libsdl.org/SDL_CreateWindow |
+| **Win32** | https://docs.microsoft.com/en-us/windows/win32/learnwin32/creating-a-window |
+| **Win32** | https://docs.microsoft.com/en-us/windows/win32/learnwin32/keyboard-input |
+
 
 
 # LICENSE
